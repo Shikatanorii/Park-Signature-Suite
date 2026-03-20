@@ -266,7 +266,12 @@ export default function App() {
             </p>
             
             {/* Quick Stats / Capacity */}
-            <div className="mb-10 p-6 bg-[#f8f5f2] rounded-[2rem] border border-[#d4af37]/20 grid grid-cols-3 gap-2 sm:gap-4 shadow-sm hover:shadow-md transition-shadow">
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="mb-10 p-6 bg-[#f8f5f2] rounded-[2rem] border border-[#d4af37]/20 grid grid-cols-3 gap-2 sm:gap-4 shadow-sm hover:shadow-md transition-shadow"
+            >
               <div className="flex flex-col sm:flex-row items-center sm:items-start gap-2 sm:gap-3 text-center sm:text-left">
                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-full flex shrink-0 items-center justify-center text-[#d4af37] shadow-sm">
                   <Users size={20} />
@@ -294,7 +299,7 @@ export default function App() {
                   <p className="text-[9px] sm:text-[10px] uppercase tracking-widest text-[#d4af37] font-bold">Starting Rate</p>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
             <div className="grid grid-cols-2 gap-6">
               <div className="flex items-start gap-3">
@@ -351,15 +356,28 @@ export default function App() {
             </a>
           </div>
           
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <motion.div 
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+            variants={{
+              visible: { transition: { staggerChildren: 0.1 } },
+              hidden: {}
+            }}
+            className="grid grid-cols-2 md:grid-cols-4 gap-4"
+          >
             {[
               "https://files.catbox.moe/yphweu.jpg",
               "https://files.catbox.moe/9r2wnm.jpg",
               "https://files.catbox.moe/0xtos5.jpg",
               "https://files.catbox.moe/mg5owb.jpg"
             ].map((img, i) => (
-              <a 
+              <motion.a 
                 key={i}
+                variants={{
+                  hidden: { opacity: 0, y: 20, scale: 0.95 },
+                  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.5, ease: "easeOut" } }
+                }}
                 href="https://www.instagram.com/parksignaturesuite/"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -375,9 +393,9 @@ export default function App() {
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
                   <Instagram className="text-white" size={32} />
                 </div>
-              </a>
+              </motion.a>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -394,10 +412,23 @@ export default function App() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+          <motion.div 
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+            variants={{
+              visible: { transition: { staggerChildren: 0.1 } },
+              hidden: {}
+            }}
+            className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6"
+          >
             {GALLERY_IMAGES.map((img, index) => (
               <motion.div
                 key={index}
+                variants={{
+                  hidden: { opacity: 0, scale: 0.9, y: 30 },
+                  visible: { opacity: 1, scale: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } }
+                }}
                 whileHover={{ scale: 1.02 }}
                 className="aspect-square rounded-2xl overflow-hidden shadow-lg"
               >
@@ -410,7 +441,7 @@ export default function App() {
                 />
               </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -715,7 +746,12 @@ export default function App() {
 
                 {/* Quick Stats / Capacity */}
                 {/* Quick Stats / Capacity */}
-                <div className="mt-12 pt-12 border-t border-gray-100 grid grid-cols-3 gap-2 lg:gap-4">
+                <motion.div 
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className="mt-12 pt-12 border-t border-gray-100 grid grid-cols-3 gap-2 lg:gap-4"
+                >
                   <div className="flex flex-col xl:flex-row items-center xl:items-start gap-2 lg:gap-3 text-center xl:text-left">
                     <div className="w-10 h-10 lg:w-12 lg:h-12 bg-[#f8f5f2] rounded-full flex shrink-0 items-center justify-center text-[#d4af37] shadow-sm">
                       <Users size={20} />
@@ -743,7 +779,7 @@ export default function App() {
                       <p className="text-[9px] lg:text-[10px] uppercase tracking-widest text-[#d4af37] font-bold">Starting Rate</p>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               </motion.div>
             </div>
           </div>
@@ -751,8 +787,14 @@ export default function App() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-[#1a1a1a] text-white py-16 px-6 border-t border-white/5">
-        <div className="max-w-7xl mx-auto">
+      <footer className="bg-[#1a1a1a] text-white py-16 px-6 border-t border-white/5 overflow-hidden">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="max-w-7xl mx-auto"
+        >
           <div className="grid md:grid-cols-4 gap-12 mb-16">
             <div className="col-span-2">
               <div className="mb-6 bg-white p-3 rounded-2xl inline-block shadow-lg">
@@ -805,7 +847,7 @@ export default function App() {
             <p>&copy; {new Date().getFullYear()} Park Signature Suite. All rights reserved.</p>
             {/* Removed Privacy and TOS dummy links */}
           </div>
-        </div>
+        </motion.div>
       </footer>
     </div>
   );
