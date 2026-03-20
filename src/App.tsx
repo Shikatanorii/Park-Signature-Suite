@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence, useScroll, useTransform, animate, useInView } from 'motion/react';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { 
   MapPin, 
   Phone, 
@@ -68,77 +68,9 @@ const GALLERY_IMAGES = [
 
 
 
-function AnimatedNumber({ value, prefix = "", suffix = "" }: { value: number, prefix?: string, suffix?: string }) {
-  const ref = useRef<HTMLSpanElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-50px" });
-
-  useEffect(() => {
-    if (isInView && ref.current) {
-      animate(0, value, {
-        duration: 2,
-        ease: "easeOut",
-        onUpdate: (latest) => {
-          if (ref.current) {
-            ref.current.textContent = `${prefix}${Math.round(latest)}${suffix}`;
-          }
-        }
-      });
-    }
-  }, [isInView, value, prefix, suffix]);
-
-  return <span ref={ref}>{prefix}0{suffix}</span>;
-}
-
-function FAQItem({ q, a, index }: { key?: React.Key, q: string, a: string, index: number }) {
-  const [isOpen, setIsOpen] = useState(false);
-  return (
-    <motion.div 
-      initial={{ opacity: 0, y: 10 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ delay: index * 0.1 }}
-      className="bg-[#f8f5f2] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
-    >
-      <button 
-        onClick={() => setIsOpen(!isOpen)} 
-        className="w-full text-left p-6 md:p-8 flex items-center justify-between focus:outline-none cursor-pointer"
-      >
-        <h4 className="text-xl font-bold font-serif text-[#1a1a1a] pr-8">{q}</h4>
-        <motion.div animate={{ rotate: isOpen ? 180 : 0 }} className="text-[#d4af37] flex-shrink-0 bg-white p-2 rounded-full shadow-sm">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-        </motion.div>
-      </button>
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div 
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <div className="px-6 md:px-8 pb-6 md:pb-8 text-gray-600 leading-relaxed border-t border-gray-200 mt-2 pt-4">
-              {a}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.div>
-  );
-}
-
 export default function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [copyToast, setCopyToast] = useState<string | null>(null);
-  const [showPreloader, setShowPreloader] = useState(true);
-
-  const { scrollY } = useScroll();
-  const heroParallaxY = useTransform(scrollY, [0, 1000], [0, 400]);
-
-  useEffect(() => {
-    // Hide preloader after 2 seconds
-    const timer = setTimeout(() => setShowPreloader(false), 2000);
-    return () => clearTimeout(timer);
-  }, []);
 
   const copyToClipboard = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
@@ -152,32 +84,6 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#fdfcfb] text-[#1a1a1a] font-sans selection:bg-[#d4af37] selection:text-white">
-      {/* Preloader */}
-      <AnimatePresence>
-        {showPreloader && (
-          <motion.div 
-            initial={{ opacity: 1 }}
-            exit={{ opacity: 0, transition: { duration: 0.8, ease: "easeInOut" } }}
-            className="fixed inset-0 z-[9999] bg-[#1a1a1a] flex flex-col items-center justify-center"
-          >
-            <motion.img 
-              initial={{ scale: 0.8, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-              src="https://files.catbox.moe/ugz732.png" 
-              alt="Park Signature Suite Logo" 
-              className="h-24 md:h-32 w-auto object-contain bg-white p-4 rounded-3xl"
-            />
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: 200 }}
-              transition={{ duration: 1.5, delay: 0.3, ease: "easeInOut" }}
-              className="h-[2px] bg-[#d4af37] mt-8 rounded-full"
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* Toast Notification */}
       <AnimatePresence>
         {copyToast && (
@@ -196,12 +102,7 @@ export default function App() {
       </AnimatePresence>
 
       {/* Navigation */}
-      <motion.nav 
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.8, ease: "easeOut", delay: 2.5 }}
-        className="fixed w-full z-50 bg-white/80 backdrop-blur-md border-b border-black/5"
-      >
+      <nav className="fixed w-full z-50 bg-white/80 backdrop-blur-md border-b border-black/5">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <a href="#home" className="flex items-center">
             <img 
@@ -265,11 +166,11 @@ export default function App() {
             </motion.div>
           )}
         </AnimatePresence>
-      </motion.nav>
+      </nav>
 
       {/* Hero Section */}
       <section id="home" className="relative h-screen flex items-center justify-center overflow-hidden pt-20">
-        <motion.div style={{ y: heroParallaxY }} className="absolute inset-0 z-0 scale-110">
+        <div className="absolute inset-0 z-0">
           <img 
             src="https://img.peerspace.com/image/upload/f_auto,q_auto,dpr_auto,w_1920/pkrkyuw6wrudg41b660r" 
             alt="Park Signature Suite Interior" 
@@ -277,48 +178,28 @@ export default function App() {
             referrerPolicy="no-referrer"
             onError={(e) => handleImageError(e, 'luxury-interior')}
           />
-        </motion.div>
+        </div>
         
-        <div className="relative z-10 max-w-4xl mx-auto px-6 text-center text-white mt-8">
+        <div className="relative z-10 max-w-4xl mx-auto px-6 text-center text-white">
           <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={{
-              hidden: { opacity: 0 },
-              visible: { 
-                opacity: 1,
-                transition: { staggerChildren: 0.2, delayChildren: 2.2 }
-              }
-            }}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
           >
-            <motion.div variants={{ hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0, transition: { duration: 0.8 } } }}>
-              <span className="inline-block px-4 py-1.5 bg-[#d4af37]/20 backdrop-blur-sm border border-[#d4af37]/30 rounded-full text-[#d4af37] text-xs font-bold tracking-widest uppercase mb-6">
-                Roselle Park's Premier Event Space
-              </span>
-            </motion.div>
-            
-            <motion.h1 
-              variants={{ hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0, transition: { duration: 0.8 } } }}
-              className="text-5xl md:text-7xl font-serif font-bold mb-8 leading-tight"
-            >
+            <span className="inline-block px-4 py-1.5 bg-[#d4af37]/20 backdrop-blur-sm border border-[#d4af37]/30 rounded-full text-[#d4af37] text-xs font-bold tracking-widest uppercase mb-6">
+              Roselle Park&apos;s Premier Event Space
+            </span>
+            <h1 className="text-5xl md:text-7xl font-serif font-bold mb-8 leading-tight">
               Bring Your Vision <br />
               <span className="italic text-[#d4af37]">To Life</span>
-            </motion.h1>
-            
-            <motion.p 
-              variants={{ hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0, transition: { duration: 0.8 } } }}
-              className="text-lg md:text-xl text-white/80 mb-10 max-w-2xl mx-auto font-light leading-relaxed"
-            >
+            </h1>
+            <p className="text-lg md:text-xl text-white/80 mb-10 max-w-2xl mx-auto font-light leading-relaxed">
               A modern, versatile event space designed for your most memorable moments. From birthdays to corporate gatherings.
-            </motion.p>
-            
-            <motion.div 
-              variants={{ hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0, transition: { duration: 0.8 } } }}
-              className="flex flex-col sm:flex-row items-center justify-center gap-4"
-            >
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <a 
                 href="#contact" 
-                className="w-full sm:w-auto bg-[#d4af37] text-white px-8 py-4 rounded-full font-bold flex items-center justify-center gap-2 hover:bg-[#c49f27] transition-all transform hover:scale-105 shadow-[0_0_30px_rgba(212,175,55,0.3)]"
+                className="w-full sm:w-auto bg-[#d4af37] text-white px-8 py-4 rounded-full font-bold flex items-center justify-center gap-2 hover:bg-[#c49f27] transition-all transform hover:scale-105"
               >
                 Get In Touch <ArrowRight size={18} />
               </a>
@@ -328,25 +209,19 @@ export default function App() {
               >
                 View Showcase
               </a>
-            </motion.div>
+            </div>
           </motion.div>
         </div>
 
         {/* Scroll Indicator */}
         <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 3.5, duration: 1 }}
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 text-white/50 flex flex-col items-center gap-2"
+          animate={{ y: [0, 10, 0] }}
+          transition={{ repeat: Infinity, duration: 2 }}
+          className="absolute bottom-10 left-1/2 -translate-x-1/2 text-white/50"
         >
-          <span className="text-[10px] tracking-widest uppercase font-bold text-white/70">Scroll</span>
-          <motion.div 
-            animate={{ y: [0, 8, 0] }}
-            transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
-            className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center p-1"
-          >
-            <div className="w-1 h-2 bg-[#d4af37] rounded-full" />
-          </motion.div>
+          <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center p-1">
+            <div className="w-1 h-2 bg-white/50 rounded-full" />
+          </div>
         </motion.div>
       </section>
 
@@ -359,29 +234,19 @@ export default function App() {
             viewport={{ once: true }}
             className="relative"
           >
-            <motion.div 
-              className="aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl style-preserve-3d"
-              whileHover={{ rotateY: 10, rotateX: -10, scale: 1.02 }}
-              transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            >
+            <div className="aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl">
               <img 
                 src="https://files.catbox.moe/ae3q2s.jpg" 
                 alt="Park Signature Suite Pricing" 
                 className="w-full h-full object-contain bg-white"
               />
-            </motion.div>
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.8 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.3, type: "spring" }}
-              className="absolute -bottom-8 -right-8 bg-[#d4af37] p-8 rounded-2xl shadow-xl hidden lg:block"
-            >
+            </div>
+            <div className="absolute -bottom-8 -right-8 bg-[#d4af37] p-8 rounded-2xl shadow-xl hidden lg:block">
               <div className="text-white text-center">
-                <p className="text-4xl font-bold mb-1"><AnimatedNumber value={100} suffix="%" /></p>
+                <p className="text-4xl font-bold mb-1">100%</p>
                 <p className="text-xs uppercase tracking-widest font-medium">Customizable</p>
               </div>
-            </motion.div>
+            </div>
           </motion.div>
 
           <motion.div
@@ -407,7 +272,7 @@ export default function App() {
                   <Users size={20} />
                 </div>
                 <div>
-                  <p className="text-xl sm:text-2xl font-serif font-bold text-[#1a1a1a]"><AnimatedNumber value={75} /></p>
+                  <p className="text-xl sm:text-2xl font-serif font-bold text-[#1a1a1a]">75</p>
                   <p className="text-[9px] sm:text-[10px] uppercase tracking-widest text-[#d4af37] font-bold">Capacity</p>
                 </div>
               </div>
@@ -416,7 +281,7 @@ export default function App() {
                   <div className="font-serif font-bold italic text-lg">sq</div>
                 </div>
                 <div>
-                  <p className="text-xl sm:text-2xl font-serif font-bold text-[#1a1a1a]"><AnimatedNumber value={980} /></p>
+                  <p className="text-xl sm:text-2xl font-serif font-bold text-[#1a1a1a]">980</p>
                   <p className="text-[9px] sm:text-[10px] uppercase tracking-widest text-[#d4af37] font-bold">Square Feet</p>
                 </div>
               </div>
@@ -425,7 +290,7 @@ export default function App() {
                   <Clock size={20} />
                 </div>
                 <div>
-                  <p className="text-xl sm:text-2xl font-serif font-bold text-[#1a1a1a]"><AnimatedNumber value={125} prefix="$" /><span className="text-sm sm:text-base text-gray-500 font-sans font-normal ml-1 whitespace-nowrap">/ hr</span></p>
+                  <p className="text-xl sm:text-2xl font-serif font-bold text-[#1a1a1a]">$125<span className="text-sm sm:text-base text-gray-500 font-sans font-normal ml-1 whitespace-nowrap">/ hr</span></p>
                   <p className="text-[9px] sm:text-[10px] uppercase tracking-widest text-[#d4af37] font-bold">Starting Rate</p>
                 </div>
               </div>
@@ -486,49 +351,33 @@ export default function App() {
             </a>
           </div>
           
-          <motion.div 
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-50px" }}
-            variants={{
-              visible: { transition: { staggerChildren: 0.1 } },
-              hidden: {}
-            }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-4"
-          >
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
               "https://files.catbox.moe/yphweu.jpg",
               "https://files.catbox.moe/9r2wnm.jpg",
               "https://files.catbox.moe/0xtos5.jpg",
               "https://files.catbox.moe/mg5owb.jpg"
             ].map((img, i) => (
-              <motion.a 
-                variants={{
-                  hidden: { opacity: 0, y: 30, scale: 0.9 },
-                  visible: { opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 100 } }
-                }}
-                whileHover={{ rotateY: 5, rotateX: -5, scale: 1.05 }}
+              <a 
                 key={i}
                 href="https://www.instagram.com/parksignaturesuite/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group relative aspect-square rounded-2xl overflow-hidden block shadow-md style-preserve-3d"
+                className="group relative aspect-square rounded-2xl overflow-hidden block shadow-md"
               >
                 <img 
                   src={img} 
                   alt={`Recent Event Profile ${i + 1}`} 
-                  className="w-full h-full object-cover transition-transform duration-700"
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                   referrerPolicy="no-referrer"
                   onError={(e) => e.currentTarget.src = `https://picsum.photos/seed/insta${i}/640/640`}
                 />
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100 backdrop-blur-[2px]">
-                  <motion.div className="scale-75 group-hover:scale-100 transition-transform duration-300">
-                    <Instagram className="text-white" size={32} />
-                  </motion.div>
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                  <Instagram className="text-white" size={32} />
                 </div>
-              </motion.a>
+              </a>
             ))}
-          </motion.div>
+          </div>
         </div>
       </section>
 
@@ -545,39 +394,23 @@ export default function App() {
             </p>
           </div>
 
-          <motion.div 
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-50px" }}
-            variants={{
-              visible: { transition: { staggerChildren: 0.1 } },
-              hidden: {}
-            }}
-            className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6"
-          >
-            {GALLERY_IMAGES.map((img, index) => {
-              const rotateDir = index % 2 === 0 ? 2 : -2;
-              return (
-                <motion.div
-                  key={index}
-                  variants={{
-                    hidden: { opacity: 0, scale: 0.8 },
-                    visible: { opacity: 1, scale: 1, transition: { type: "spring", stiffness: 100 } }
-                  }}
-                  whileHover={{ scale: 1.05, rotateZ: rotateDir }}
-                  className="aspect-square rounded-2xl overflow-hidden shadow-lg cursor-pointer"
-                >
-                  <img 
-                    src={img} 
-                    alt={`Gallery Detail ${index + 1}`} 
-                    className="w-full h-full object-cover hover:brightness-110 transition-all duration-500"
-                    referrerPolicy="no-referrer"
-                    onError={(e) => handleImageError(e, `event-detail-${index}`)}
-                  />
-                </motion.div>
-              );
-            })}
-          </motion.div>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+            {GALLERY_IMAGES.map((img, index) => (
+              <motion.div
+                key={index}
+                whileHover={{ scale: 1.02 }}
+                className="aspect-square rounded-2xl overflow-hidden shadow-lg"
+              >
+                <img 
+                  src={img} 
+                  alt={`Gallery Detail ${index + 1}`} 
+                  className="w-full h-full object-cover hover:brightness-110 transition-all"
+                  referrerPolicy="no-referrer"
+                  onError={(e) => handleImageError(e, `event-detail-${index}`)}
+                />
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -589,38 +422,26 @@ export default function App() {
             <h3 className="text-4xl md:text-5xl font-serif font-bold">Perfect For Every Event</h3>
           </div>
 
-          <motion.div 
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-50px" }}
-            variants={{
-              visible: { transition: { staggerChildren: 0.1 } },
-              hidden: {}
-            }}
-            className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
-          >
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {EVENT_TYPES.map((event, index) => (
               <motion.div
                 key={event.title}
-                variants={{
-                  hidden: { opacity: 0, scale: 0.95 },
-                  visible: { opacity: 1, scale: 1, transition: { type: "spring", stiffness: 100 } }
-                }}
-                className="group relative p-8 rounded-3xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all cursor-default overflow-hidden"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                className="group p-8 rounded-3xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all cursor-default"
               >
-                {/* Glowing hover effect */}
-                <div className="absolute inset-0 bg-gradient-to-tr from-[#d4af37]/0 via-[#d4af37]/0 to-[#d4af37]/0 group-hover:from-[#d4af37]/5 group-hover:via-[#d4af37]/10 group-hover:to-[#d4af37]/5 transition-colors duration-500 ease-in-out pointer-events-none"></div>
-                
-                <div className="relative z-10 w-12 h-12 bg-[#d4af37]/20 rounded-2xl flex items-center justify-center text-[#d4af37] mb-6 group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(212,175,55,0.2)] group-hover:shadow-[0_0_25px_rgba(212,175,55,0.4)]">
+                <div className="w-12 h-12 bg-[#d4af37]/20 rounded-2xl flex items-center justify-center text-[#d4af37] mb-6 group-hover:scale-110 transition-transform">
                   <Star size={24} />
                 </div>
-                <h4 className="relative z-10 text-2xl font-serif font-bold mb-4">{event.title}</h4>
-                <p className="relative z-10 text-white/60 leading-relaxed group-hover:text-white/80 transition-colors">
+                <h4 className="text-2xl font-serif font-bold mb-4">{event.title}</h4>
+                <p className="text-white/60 leading-relaxed">
                   {event.description}
                 </p>
               </motion.div>
             ))}
-          </motion.div>
+          </div>
         </div>
       </section>
 
@@ -652,7 +473,16 @@ export default function App() {
                 a: "You can book seamlessly through our official Peerspace listing or contact us directly to coordinate your specific dates and requirements."
               }
             ].map((faq, i) => (
-              <FAQItem key={i} q={faq.q} a={faq.a} index={i} />
+              <motion.div 
+                key={i}
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="bg-[#f8f5f2] rounded-2xl p-6 md:p-8"
+              >
+                <h4 className="text-xl font-bold font-serif mb-3 text-[#1a1a1a]">{faq.q}</h4>
+                <p className="text-gray-600 leading-relaxed">{faq.a}</p>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -668,18 +498,14 @@ export default function App() {
               viewport={{ once: true }}
               className="w-full md:w-1/2 lg:w-1/3"
             >
-              <motion.div 
-                className="relative aspect-square rounded-[3rem] overflow-hidden shadow-2xl border-4 border-white bg-gray-200 style-preserve-3d"
-                whileHover={{ rotateY: 10, rotateX: -10, scale: 1.02 }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              >
+              <div className="relative aspect-square rounded-[3rem] overflow-hidden shadow-2xl border-4 border-white bg-gray-200">
                 <img 
                   src="https://img.peerspace.com/image/upload/c_crop,g_custom,fl_progressive/c_scale,dpr_2.0,w_400/uc1wouhmrsprsy1pw3bz" 
                   alt="Dwight B - Owner" 
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 ring-1 ring-inset ring-black/10 rounded-[3rem]"></div>
-              </motion.div>
+              </div>
             </motion.div>
             
             <motion.div 
@@ -895,7 +721,7 @@ export default function App() {
                       <Users size={20} />
                     </div>
                     <div>
-                      <p className="text-xl lg:text-2xl font-serif font-bold text-[#1a1a1a]"><AnimatedNumber value={75} /></p>
+                      <p className="text-xl lg:text-2xl font-serif font-bold text-[#1a1a1a]">75</p>
                       <p className="text-[9px] lg:text-[10px] uppercase tracking-widest text-[#d4af37] font-bold">Capacity</p>
                     </div>
                   </div>
@@ -904,7 +730,7 @@ export default function App() {
                       <div className="font-serif font-bold italic text-lg">sq</div>
                     </div>
                     <div>
-                      <p className="text-xl lg:text-2xl font-serif font-bold text-[#1a1a1a]"><AnimatedNumber value={980} /></p>
+                      <p className="text-xl lg:text-2xl font-serif font-bold text-[#1a1a1a]">980</p>
                       <p className="text-[9px] lg:text-[10px] uppercase tracking-widest text-[#d4af37] font-bold">Square Feet</p>
                     </div>
                   </div>
@@ -913,7 +739,7 @@ export default function App() {
                       <Clock size={20} />
                     </div>
                     <div>
-                      <p className="text-xl lg:text-2xl font-serif font-bold text-[#1a1a1a]"><AnimatedNumber value={125} prefix="$" /><span className="text-sm lg:text-base text-gray-500 font-sans font-normal ml-1 whitespace-nowrap">/ hr</span></p>
+                      <p className="text-xl lg:text-2xl font-serif font-bold text-[#1a1a1a]">$125<span className="text-sm lg:text-base text-gray-500 font-sans font-normal ml-1 whitespace-nowrap">/ hr</span></p>
                       <p className="text-[9px] lg:text-[10px] uppercase tracking-widest text-[#d4af37] font-bold">Starting Rate</p>
                     </div>
                   </div>
@@ -925,19 +751,10 @@ export default function App() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-[#1a1a1a] text-white py-16 px-6 border-t border-white/5 overflow-hidden">
-        <motion.div 
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-50px" }}
-          variants={{
-            visible: { transition: { staggerChildren: 0.1 } },
-            hidden: {}
-          }}
-          className="max-w-7xl mx-auto"
-        >
+      <footer className="bg-[#1a1a1a] text-white py-16 px-6 border-t border-white/5">
+        <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-4 gap-12 mb-16">
-            <motion.div variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6 } } }} className="col-span-2">
+            <div className="col-span-2">
               <div className="mb-6 bg-white p-3 rounded-2xl inline-block shadow-lg">
                 <img 
                   src="https://files.catbox.moe/ugz732.png" 
@@ -953,9 +770,9 @@ export default function App() {
                   <Instagram size={28} />
                 </a>
               </div>
-            </motion.div>
+            </div>
             
-            <motion.div variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6 } } }}>
+            <div>
               <h5 className="font-bold mb-6 uppercase tracking-widest text-xs text-[#d4af37]">Quick Links</h5>
               <ul className="space-y-4 text-white/60">
                 {NAV_LINKS.map(link => (
@@ -964,9 +781,9 @@ export default function App() {
                   </li>
                 ))}
               </ul>
-            </motion.div>
+            </div>
 
-            <motion.div variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6 } } }}>
+            <div>
               <h5 className="font-bold mb-6 uppercase tracking-widest text-xs text-[#d4af37]">Hours</h5>
               <ul className="space-y-4 text-white/60">
                 <li className="flex justify-between">
@@ -981,14 +798,14 @@ export default function App() {
                   *Hours vary based on event bookings
                 </li>
               </ul>
-            </motion.div>
+            </div>
           </div>
 
-          <motion.div variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { duration: 0.8, delay: 0.4 } } }} className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-white/30 text-sm">
+          <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-white/30 text-sm">
             <p>&copy; {new Date().getFullYear()} Park Signature Suite. All rights reserved.</p>
             {/* Removed Privacy and TOS dummy links */}
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       </footer>
     </div>
   );
